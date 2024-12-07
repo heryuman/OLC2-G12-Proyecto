@@ -1,35 +1,40 @@
-// Simple Arithmetics Grammar
-// ==========================
-//
-// Accepts expressions like "2 * (3 + 4)" and computes their value.
+inicio
+  = regla+
 
-Calculator
-  = head:Expression tail:( "\n" @Expression )* {
-    return [head, ...tail]
-  }
+regla
+  = (identificador _ "=" _ expresion finc _)
 
-Expression
-  = head:Term tail:(_ ("+" / "-") _ Term)* {
-      return tail.reduce(function(result, element) {
-        if (element[1] === "+") { return result + element[3]; }
-        if (element[1] === "-") { return result - element[3]; }
-      }, head);
-    }
+expresion
+  = eleccion
 
-Term
-  = head:Factor tail:(_ ("*" / "/") _ Factor)* {
-      return tail.reduce(function(result, element) {
-        if (element[1] === "*") { return result * element[3]; }
-        if (element[1] === "/") { return result / element[3]; }
-      }, head);
-    }
+finc
+  = ";"
+  / "\n"
 
-Factor
-  = "(" _ @Expression _ ")"
-  / Integer
+eleccion
+  = secuencia (_ "/" _ secuencia)*
 
-Integer "integer"
-  = _ [0-9]+ { return parseInt(text(), 10); }
+secuencia
+  = (primary _)*
 
-_ "whitespace"
+primary
+  = cadena
+  / identificador cerradura
+  / "(" _ expresion _ ")" cerradura
+  / "[" ([a-zA-Z0-9\_\\\-]+) "]" cerradura
+
+cerradura
+  = "+"
+  / "?"
+  / "*"
+  / ""
+
+cadena
+  = "\""([^"]*) "\""
+  /  "\'"([^']*) "\'"
+
+identificador
+  = [a-zA-Z_] [a-zA-Z0-9_]*
+
+_ "espacioEnBlanco"
   = [ \t\n\r]*
