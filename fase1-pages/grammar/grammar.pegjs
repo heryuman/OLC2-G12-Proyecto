@@ -1,4 +1,4 @@
-inicio
+start
   = regla+
 
 regla
