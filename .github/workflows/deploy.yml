@@ -2,7 +2,7 @@ name: Fase1 G12
 
 on:
   push:
-    branches: 'fase1'
+    branches: 'main'
 
 jobs:
   build_site:
