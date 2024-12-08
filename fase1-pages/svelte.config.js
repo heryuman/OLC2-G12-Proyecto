@@ -14,6 +14,7 @@ const config = {
 		adapter: adapter(),
 		paths: {
             base: process.argv.includes("dev") ? "" : '/OLC2-G12-Proyecto',
+			relative: false,
         },
 	}
 };
