@@ -33,9 +33,17 @@ parsingExpression
   / string "i"?
   / range "i"?
   / group
+  / punto
+  / endOfInput
 
 group
   = "(" _ choice _ ")"
+
+punto
+  = .
+
+endOfInput "fin de entrada de texto"
+  = "!" "."
 
 string
 	= ["] [^"]* ["]
