@@ -1,8 +1,8 @@
-name: Deploy hacia github pages Grupo 12
+name: Fase1 G12
 
 on:
   push:
-    branches: 'selvin.201700603'
+    branches: 'main'
 
 jobs:
   build_site:
@@ -22,19 +22,19 @@ jobs:
           cache-dependency-path: ./fase1-pages/package-lock.json
 
       - name: Install dependencies
-        run : npm install
+        run: npm install
 
       - name: build
         env:
           BASE_PATH: '/${{ github.event.repository.name }}'
         run: |
           npm run build
-          
+
       - name: Upload Artifacts
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'fase1-pages/bulid'
-  
+          path: 'fase1-pages/build/'
+
   deploy:
     needs: build_site
     runs-on: ubuntu-latest
