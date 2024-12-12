@@ -42,7 +42,7 @@ group
   = "(" _ choice _ ")"
 
 punto
-  = .
+  = "."
 
 endOfInput "fin de entrada de texto"
   = "!" "."
