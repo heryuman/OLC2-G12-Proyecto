@@ -1,55 +1,64 @@
-inicio
-  = regla+
+grammar
+  = rule+ nl
 
-regla
-  = (identificador _ "=" _ expresion  finc _)
+rule
+  = nl identifier nl string? nl "=" _ choice nl (_";"_)?
+  /_ nl comntoln _ nl
+  / nl cmntmln nl
+  
+choice
+  = concatenation (nl "/" nl concatenation)*
 
+concatenation
+  = pluck (_ pluck)*
 
-expresion
-  = eleccion
+pluck
+  = "@"? _ label
 
-finc
-  = ";"
-  / "\n"
+label
+  = (identifier _ ":")? _ expression
 
-eleccion
-  = secuencia (_ "/" _ secuencia)*
+expression
+  = "$"? _ parsingExpression _ quantifier?
 
-secuencia
-  = (primary _)*
+quantifier
+  = [?+*]
+  / "|" _ (number / identifier) _ "|"
+  / "|" _ (number / identifier)? _ ".." _ (number / identifier)? _ "|"
+  / "|" _ (number / identifier)? _ "," _ choice _ "|"
+  / "|" _ (number / identifier)? _ ".." _ (number / identifier)? _ "," _ choice _ "|"
 
-primary
-  = cadena
-  / identificador cerradura
-  / "(" _ expresion _ ")" cerradura
-  / "[" inicio:init "-" fin:fin"]" cerradura  {
-      // Validar que el inicio sea menor o igual que el fin
-      if (inicio.charCodeAt(0) > fin.charCodeAt(0)) {
-        throw new SyntaxError(`El rango [${inicio}-${fin}] no es válido: debe ir de menor a mayor.`);
-      }
-      return `[${inicio}-${fin}]`;
-    }
+parsingExpression
+  = identifier
+  / string "i"?
+  / range "i"?
+  / group
 
-  / "["   ([a-zA-Z0-9\_\\\-]+) "]" cerradura
+group
+  = "(" _ choice _ ")"
 
+string
+	= ["] [^"]* ["]
+    / ['] [^']* [']
+    
+range = "[" input_range+ "]"
 
-init = caracter
+input_range = [^[\]-] "-" [^[\]-]
+			/ [^[\]]+
 
-fin = caracter
-caracter = [a-zA-Z0-9]
+identifier "identificador"
+  = [_a-z]i[_a-z0-9]i*
 
-cerradura
-  = "+"
-  / "?"
-  / "*"
-  / ""
+_ "espacios en blanco"
+  = [ \t]*
 
-cadena
-  = "\""([^"]*) "\""
-  /  "\'"([^']*) "\'"
-
-identificador
-  = [a-zA-Z_] [a-zA-Z0-9_]*
-
-_ "espacioEnBlanco"
+nl "nueva linea"
   = [ \t\n\r]*
+
+number
+  = [0-9]+
+  
+comntoln
+	= "//"(!"\n" .)*
+cmntmln   
+	= "/*"(!"*/" .)*"*/"
