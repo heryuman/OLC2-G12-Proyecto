@@ -35,6 +35,8 @@ parsingExpression
   / group
   / punto
   / endOfInput
+  / "&" expression
+  / "!" expression
 
 group
   = "(" _ choice _ ")"
