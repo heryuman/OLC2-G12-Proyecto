@@ -1,40 +1,64 @@
-start
-  = regla+
+grammar
+  = rule+ nl
 
-regla
-  = (identificador _ "=" _ expresion finc _)
+rule
+  = nl identifier nl string? nl "=" _ choice nl (_";"_)?
+  /_ nl comntoln _ nl
+  / nl cmntmln nl
+  
+choice
+  = concatenation (nl "/" nl concatenation)*
 
-expresion
-  = eleccion
+concatenation
+  = pluck (_ pluck)*
 
-finc
-  = ";"
-  / "\n"
+pluck
+  = "@"? _ label
 
-eleccion
-  = secuencia (_ "/" _ secuencia)*
+label
+  = (identifier _ ":")? _ expression
 
-secuencia
-  = (primary _)*
+expression
+  = "$"? _ parsingExpression _ quantifier?
 
-primary
-  = cadena
-  / identificador cerradura
-  / "(" _ expresion _ ")" cerradura
-  / "[" ([a-zA-Z0-9\_\\\-]+) "]" cerradura
+quantifier
+  = [?+*]
+  / "|" _ (number / identifier) _ "|"
+  / "|" _ (number / identifier)? _ ".." _ (number / identifier)? _ "|"
+  / "|" _ (number / identifier)? _ "," _ choice _ "|"
+  / "|" _ (number / identifier)? _ ".." _ (number / identifier)? _ "," _ choice _ "|"
 
-cerradura
-  = "+"
-  / "?"
-  / "*"
-  / ""
+parsingExpression
+  = identifier
+  / string "i"?
+  / range "i"?
+  / group
 
-cadena
-  = "\""([^"]*) "\""
-  /  "\'"([^']*) "\'"
+group
+  = "(" _ choice _ ")"
 
-identificador
-  = [a-zA-Z_] [a-zA-Z0-9_]*
+string
+	= ["] [^"]* ["]
+    / ['] [^']* [']
+    
+range = "[" input_range+ "]"
 
-_ "espacioEnBlanco"
+input_range = [^[\]-] "-" [^[\]-]
+			/ [^[\]]+
+
+identifier "identificador"
+  = [_a-z]i[_a-z0-9]i*
+
+_ "espacios en blanco"
+  = [ \t]*
+
+nl "nueva linea"
   = [ \t\n\r]*
+
+number
+  = [0-9]+
+  
+comntoln
+	= "//"(!"\n" .)*
+cmntmln   
+	= "/*"(!"*/" .)*"*/"
